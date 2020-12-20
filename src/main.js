@@ -23,6 +23,7 @@ Vue.config.productionTip = false;
 
 Vue.use(VeeValidate);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+Vue.component('pagination', require('laravel-vue-pagination'));
 
 Vue.use(Vuex);
 Vue.use(VueToastr, {});

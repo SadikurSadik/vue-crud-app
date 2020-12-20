@@ -11,7 +11,7 @@
       <th>Action</th>
       </thead>
       <tbody>
-      <tr v-for="product in products">
+      <tr v-for="product in products.data">
         <td>{{ product.title }}</td>
         <td>{{ product.description }}</td>
         <td>{{ product.price }}</td>
@@ -23,6 +23,10 @@
       </tr>
       </tbody>
     </table>
+    <pagination :data="products" @pagination-change-page="index">
+      <span slot="prev-nav">Previous</span>
+      <span slot="next-nav">Next</span>
+    </pagination>
 
     <div v-if="creating || editing">
       <transition name="modal">
@@ -106,10 +110,10 @@ export default {
     };
   },
   methods: {
-    index() {
-      ProductsService.index().then(
+    index(page = 1) {
+      ProductsService.index(page).then(
           response => {
-            this.products = response.data.data;
+            this.products = response.data;
           },
           error => {
             this.message =
@@ -126,7 +130,6 @@ export default {
       this.creating = true;
     },
     storeProduct() {
-      console.log(this.product);
       ProductsService.store(this.product).then(response => {
             this.hideModal();
             this.index();
@@ -183,7 +186,6 @@ export default {
       reader.readAsDataURL(image);
       reader.onload = e =>{
         this.previewImage = e.target.result;
-        console.log(this.previewImage);
       };
     }
   },

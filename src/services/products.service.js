@@ -4,8 +4,8 @@ import authHeader from './auth-header';
 const API_URL = 'http://localhost:8000/api/v1/products/';
 
 class ProductsService {
-  index() {
-    return axios.get(API_URL, { headers: authHeader() });
+  index(page = 1) {
+    return axios.get(API_URL + '?page='+page, { headers: authHeader() });
   }
 
   store(data) {
