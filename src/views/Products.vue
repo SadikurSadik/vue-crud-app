@@ -57,6 +57,12 @@
                       <input v-model="product.price" type="text" class="form-control">
                       <p class="alert-warning" v-if="validation_errors.hasOwnProperty('price')">{{ validation_errors.price[0] }}</p>
                     </div>
+                    <div class="form-group">
+                      <label for="picture">Photo</label>
+                      <input ref="fileInput" type="file" class="form-control" @input="onFileChange">
+<!--                      <input type="file" class="form-control" id="picture" @change="onFileChange">-->
+                      <img v-bind:src="imagePreview" width="100" height="100" v-show="showPreview"/>
+                    </div>
                   </form>
                 </div>
                 <div class="modal-footer">
@@ -103,6 +109,8 @@ export default {
     return {
       products: [],
       product: {},
+      showPreview: false,
+      imagePreview: false,
       message: '',
       editing: false,
       creating: false,
@@ -128,8 +136,11 @@ export default {
       this.validation_errors = {};
       this.product = {};
       this.creating = true;
+      this.showPreview = false;
+      this.imagePreview = '';
     },
     storeProduct() {
+      this.product.photo = this.imagePreview;
       ProductsService.store(this.product).then(response => {
             this.hideModal();
             this.index();
@@ -143,9 +154,12 @@ export default {
       ProductsService.show(id).then(response => {
         this.product = response.data.data;
       });
+      this.showPreview = false;
       this.editing = true;
+      this.imagePreview = '';
     },
     updateProduct(id) {
+      this.product.photo = this.imagePreview;
       ProductsService.update(id, this.product).then(response => {
           this.hideModal();
           this.index();
@@ -159,12 +173,6 @@ export default {
           }
 
           this.message = error;
-        }).catch(error => {
-          if ( error.response.status === 422 ) {
-            this.validation_errors = error.response.data.errors;
-          }else {
-            this.$toastr.e("ERROR!", error);
-          }
         });
     },
     destroy(id) {
@@ -180,14 +188,36 @@ export default {
       this.creating = false;
       this.editing = false;
     },
-    uploadImage(e){
-      const image = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = e =>{
-        this.previewImage = e.target.result;
-      };
+    onFileChange(){
+      let input = this.$refs.fileInput
+      let file = input.files
+      if (file && file[0]) {
+        let reader = new FileReader
+        reader.onload = e => {
+          this.imagePreview = e.target.result;
+          this.showPreview = true;
+        }
+        reader.readAsDataURL(file[0])
+        this.$emit('input', file[0])
+      }
+
+
+      // this.product.photo = event.target.files[0];
+      /*let reader  = new FileReader();
+
+      reader.addEventListener("load", function () {
+        this.showPreview = true;
+        this.imagePreview = reader.result;
+      }.bind(this), false);
+
+      if(this.product.photo){
+        if ( /\.(jpe?g|png|gif)$/i.test( this.formData.picture.name ) ) {
+
+          reader.readAsDataURL( this.formData.picture );
+        }
+      }*/
     }
+
   },
   mounted() {
     this.index()
