@@ -1,6 +1,7 @@
 import axios from 'axios';
+import config from '../../vue.config';
 
-const API_URL = 'http://localhost:8000/api/v1/';
+const API_URL = config.apiBaseUrl;
 
 class AuthService {
   login(user) {
