@@ -1,10 +1,11 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 
-const API_URL = 'http://localhost:8000/api/v1/products/';
+const API_URL = process.env.VUE_APP_API_BASE_URL + '/products/';
 
 class ProductsService {
   index(page = 1) {
+    console.log(API_URL)
     return axios.get(API_URL + '?page='+page, { headers: authHeader() });
   }
 
